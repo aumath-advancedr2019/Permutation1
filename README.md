@@ -1,6 +1,6 @@
 # Project: permutation1
 
-Project for develop a permutation function.
+Project for developing a permutation function.
 
 ## Team setup
 
