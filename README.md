@@ -6,6 +6,7 @@ Project for develop a permutation function.
 
 Adrián:
 - Project Manager
+
 Solveig:
 - Documentation execute
 - Quality executive
