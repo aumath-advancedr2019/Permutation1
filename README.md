@@ -19,9 +19,9 @@ We want it to be able to calculate different statistical values for making a p-v
 ## Roadmap:
 ### gamma:
 	1) Create permuation algorithm (permutation + p-value + plot)
-	2) Minimum interface + Docs
+	2) Minimum interface + first documentations (help and vignette)
 
 ### beta:
 	3) Develop functionalities + classes
-	4) Create package + Docs
+	4) Create package + documentation (help and vignette)
 	5) Testing
