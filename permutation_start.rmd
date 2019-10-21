@@ -72,6 +72,7 @@ permutation_mean(test, "names", "value", "Something", "Something_else")
 
 ```
 
+#Permutation median:
 
 ```{r}
 permutation_median <- function(dataset, name, count, group1, group2, no_perm=10000, plot=FALSE) {
