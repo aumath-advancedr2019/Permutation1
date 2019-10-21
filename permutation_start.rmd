@@ -84,7 +84,7 @@ permutation_median <- function(dataset, name, count, group1, group2, no_perm=100
   for (i in 1:length(r)) {
     setTxtProgressBar(pb, i)
     #shuffle dataset
-    p <- cbind(vec = dataset$name, count = sample(dataset$count)) %>% as.tibble()
+    p <- cbind(vec = dataset$name, count = sample(dataset$count)) %>% as_tibble()
   
     #calculate median for group 1 and group 2
     g1 <- p %>% filter(vec == group1) %>% summarise(median(as.numeric(count)))
