@@ -15,6 +15,8 @@ Mean, define number of permutaions, 10000 being default value.
 Define dataset, the column name for the column with the different categories you want to compare means for and the name of the columns with the counts.
 The names of the groups/categories.
 
+### Permute mean
+
 ```{r}
 permutation_mean <- function(dataset, name, count, group1, group2, no_perm=10000, plot=FALSE){
 # Select columns in the dataset and remane those
@@ -62,10 +64,10 @@ permutation_mean <- function(dataset, name, count, group1, group2, no_perm=10000
   if (plot == TRUE) {
     # Plot + result
 
-    # plot <- PLOT_PERMUTE()!!!
+    # plot <- PLOT_PERMUTE(r,observed)!!!
 
     print(result)
-    return(plot)
+    # return(plot)
   } else if (plot == FALSE) {
     # Result
     print(result)
@@ -81,7 +83,7 @@ permutation_mean(test, "names", "value", "Something", "Something_else", plot = F
 ```
 
 
-#Permutation median:
+### Permutation median:
 
 ```{r}
 permutation_median <- function(dataset, name, count, group1, group2, no_perm=10000, plot=FALSE) {
@@ -133,7 +135,7 @@ permutation_median <- function(dataset, name, count, group1, group2, no_perm=100
     # plot <- PLOT_PERMUTE()!!!
 
     print(result)
-    return(plot)
+    # return(plot)
   } else if (plot == FALSE) {
     # Result
     print(result)
@@ -145,3 +147,5 @@ test <- as_tibble(rnorm(100)) %>% mutate(names=names)
 
 permutation_median(test, "names", "value", "GROUP1", "GROUP2", plot = F)
 ```
+
+
