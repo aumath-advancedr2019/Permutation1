@@ -23,7 +23,7 @@ r <- rep(NA,no_perm)
 for (i in 1:length(r)) {
   #shuffle dataset
   p <- cbind(vec1 = dataset$name, count = sample(dataset$count)) %>% 
-    as.tibble()
+    as_tibble()
   
   #calculate mean for group 1
   g1 <- p %>% 
@@ -56,7 +56,8 @@ plot <- ggplot(data = pd, mapping = aes(x=value)) +
   geom_histogram(fill="darkblue", bins=50) +
   geom_vline(color="darkorange",xintercept = as.numeric(observed)) + 
   xlab("")+
-  ylab("Count")
+  ylab("Count")+
+  theme_minimal()
 
 #permuted p-value. 1 is added because we always expect the next one to be significant (of permuted values)
 p_value <- ((sum(abs(r) >= abs(observed[,1]))+1)/(length(r)+1))
