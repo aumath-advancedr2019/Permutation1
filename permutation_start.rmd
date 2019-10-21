@@ -6,7 +6,7 @@ output: html_document
 
 ```{r}
 # Load libraries
-library(tidyverse)
+# library(tidyverse)
 ```
 
 
@@ -16,68 +16,11 @@ Define dataset, the column name for the column with the different categories you
 The names of the groups/categories.
 
 ```{r}
-permutation_mean <- function(dataset, name, count, group1, group2, no_perm=10000){
-#permute and save difference in mean per round
-dataset <- dataset %>% rename("count"=count, "name"=name)
-r <- rep(NA,no_perm)  
-for (i in 1:length(r)) {
-  #shuffle dataset
-  p <- cbind(vec1 = dataset$name, count = sample(dataset$count)) %>% 
-    as_tibble()
+permutation_mean <- function(dataset, name, count, group1, group2, no_perm=10000, plot=FALSE){
+# Select columns in the dataset and remane those
+  dataset <- dataset[c(count,name)]      # Select
+  names(dataset) <- c("count","name")    # Rename
   
-  #calculate mean for group 1
-  g1 <- p %>% 
-    filter(vec1 == group1) %>% 
-    summarise(mean(as.numeric(count)))
-  
-  #calculate mean for group 2
-  g2 <- p %>% 
-    filter(vec1 == group2) %>% 
-    summarise(mean(as.numeric(count))) 
-  
-  #add difference in mean to vector
-  r[i] <- as.numeric(g1) - as.numeric(g2)
-  
-  if(i%%1000==0) {        #tracker
-    cat(i, "\n")
-    flush.console()
-  }
-}
-
-#create df with values for null distribution
-pd <- data.frame(i=1:length(r), value=r) %>% 
-  tbl_df()
-
-#the observed difference
-observed <- (dataset %>% filter(name == group1) %>% summarise(mean(as.numeric(count))))-(dataset %>% filter(name==group2) %>% summarise(mean(as.numeric(count))))
-
-#plotting the null distribution and observed difference with the observed as a line
-plot <- ggplot(data = pd, mapping = aes(x=value)) + 
-  geom_histogram(fill="darkblue", bins=50) +
-  geom_vline(color="darkorange",xintercept = as.numeric(observed)) + 
-  xlab("")+
-  ylab("Count")+
-  theme_minimal()
-
-#permuted p-value. 1 is added because we always expect the next one to be significant (of permuted values)
-p_value <- ((sum(abs(r) >= abs(observed[,1]))+1)/(length(r)+1))
-return (list(p_value, plot))
-}
-
-
-names <- c(replicate(50,"Something"), replicate(50, "Something_else"))
-test <- as.tibble(rnorm(100)) %>% mutate(names=names)
-
-permutation_mean(test, "names", "value", "Something", "Something_else")
-
-```
-
-#Permutation median:
-
-```{r}
-permutation_median <- function(dataset, name, count, group1, group2, no_perm=10000, plot=FALSE) {
-  #permute and save difference in mean per round
-  dataset <- dataset %>% rename("count"=count, "name"=name)
   r <- rep(NA,no_perm)
   
   # Progress bar
@@ -86,76 +29,119 @@ permutation_median <- function(dataset, name, count, group1, group2, no_perm=100
   for (i in 1:length(r)) {
     setTxtProgressBar(pb, i)
     #shuffle dataset
-    p <- cbind(vec = dataset$name, count = sample(dataset$count)) %>% as_tibble()
-  
+    p <- dataset
+    p$count <- sample(p$count)
+
     #calculate median for group 1 and group 2
-    g1 <- p %>% filter(vec == group1) %>% summarise(median(as.numeric(count)))
-    g2 <- p %>% filter(vec == group2) %>% summarise(median(as.numeric(count))) 
-  
+    g1 <- mean(p[which(p$name == group1),]$count)
+    g2 <- mean(p[which(p$name == group2),]$count)
+
     #add difference in median to vector
     r[i] <- as.numeric(g1) - as.numeric(g2)
   }
   close(pb)
 
-  #create df with values for null distribution
-  pd <- data.frame(i=1:length(r), value=r) %>% tbl_df()
+  # The observed difference
+  m1 <- mean(dataset[which(dataset$name == group1),]$count)
+  m2 <- mean(dataset[which(dataset$name == group2),]$count)
+  observed <- m1-m2       # Observed mean
 
-  #the observed difference
-  observed <- (dataset %>% filter(name == group1) %>%
-                summarise(median(as.numeric(count))))-(dataset %>% filter(name==group2) %>%
-                summarise(median(as.numeric(count))))
+  estimate <- c(as.numeric(m1),as.numeric(m2),as.numeric(observed))
+  names(estimate) <- c("Mean first group","Mean second group","Observed mean difference")
+
+  # P-value
+  p_value <- ((sum(abs(r) >= abs(observed))+1)/(length(r)+1))
+  names(p_value) <- "p-value"
+
+  result = list(method = "Permutation Test (Mean)", p.value = p_value,
+                  estimate = estimate,
+                  data.name = sprintf("Permutation for group: %s and %s", group1, group2))
+  class(result) <- "htest"
 
   # If statement to plot or not
   if (plot == TRUE) {
-    #plotting the null distribution and observed difference with the observed as a line
-    plot <- ggplot(data = pd, mapping = aes(x=value)) + 
-      geom_histogram(fill="darkblue", bins=50) +
-      geom_vline(color="darkorange",xintercept = as.numeric(observed)) + 
-      xlab("")+
-      ylab("Count")
+    # Plot + result
 
-    # NICE PRINTING FOR TEST
-    # Permuted p-value. 1 is added because we always expect the next one to be significant (of permuted values)
-    #
-    m1 <- test %>% filter(names == group1) %>% summarise(median(value))
-    m2 <- test %>% filter(names == group2) %>% summarise(median(value))
-    estimate <- c(as.numeric(m1),as.numeric(m2),as.numeric(observed))
-    names(estimate) <- c("Median first group","Median second group","Observed median difference")
-    #
-    p_value <- ((sum(abs(r) >= abs(observed[,1]))+1)/(length(r)+1))
-    names(p_value) <- "p-value"
-    #
-    result = list(method = "Permutation Test (Median)", p.value = p_value,
-                  estimate = estimate,
-                  data.name = sprintf("Permutation for group: %s and %s", group1, group2))
-    class(result) <- "htest"
-    
+    # plot <- PLOT_PERMUTE()!!!
+
     print(result)
     return(plot)
   } else if (plot == FALSE) {
-    # NICE PRINTING FOR TEST
-    # Permuted p-value. 1 is added because we always expect the next one to be significant (of permuted values)
-    #
-    m1 <- test %>% filter(names == group1) %>% summarise(median(value))
-    m2 <- test %>% filter(names == group2) %>% summarise(median(value))
-    estimate <- c(as.numeric(m1),as.numeric(m2),as.numeric(observed))
-    names(estimate) <- c("Median first group","Median second group","Observed median difference")
-    #
-    p_value <- ((sum(abs(r) >= abs(observed[,1]))+1)/(length(r)+1))
-    names(p_value) <- "p-value"
-    #
-    result = list(method = "Permutation Test (Median)", p.value = p_value,
+    # Result
+    print(result)
+  }
+}
+
+
+names <- c(replicate(50,"Something"), replicate(50, "Something_else"))
+test <- as.tibble(rnorm(100)) %>% mutate(names=names)
+
+permutation_mean(test, "names", "value", "Something", "Something_else", plot = FALSE)
+
+```
+
+
+#Permutation median:
+
+```{r}
+permutation_median <- function(dataset, name, count, group1, group2, no_perm=10000, plot=FALSE) {
+  # Select columns in the dataset and remane those
+  dataset <- dataset[c(count,name)]      # Select
+  names(dataset) <- c("count","name")    # Rename
+  
+  r <- rep(NA,no_perm)
+  
+  # Progress bar
+  pb <- txtProgressBar(min = 1, max = no_perm, style = 3)
+  
+  for (i in 1:length(r)) {
+    setTxtProgressBar(pb, i)
+    #shuffle dataset
+    p <- dataset
+    p$count <- sample(p$count)
+
+    #calculate median for group 1 and group 2
+    g1 <- median(p[which(p$name == group1),]$count)
+    g2 <- median(p[which(p$name == group2),]$count)
+
+    #add difference in median to vector
+    r[i] <- as.numeric(g1) - as.numeric(g2)
+  }
+  close(pb)
+  
+  # The observed difference
+  m1 <- median(dataset[which(dataset$name == group1),]$count)
+  m2 <- median(dataset[which(dataset$name == group2),]$count)
+  observed <- m1-m2       # Observed median
+
+  estimate <- c(as.numeric(m1),as.numeric(m2),as.numeric(observed))
+  names(estimate) <- c("Median first group","Median second group","Observed median difference")
+
+  # P-value
+  p_value <- ((sum(abs(r) >= abs(observed))+1)/(length(r)+1))
+  names(p_value) <- "p-value"
+
+  result = list(method = "Permutation Test (Median)", p.value = p_value,
                   estimate = estimate,
                   data.name = sprintf("Permutation for group: %s and %s", group1, group2))
-    class(result) <- "htest"
-    
+  class(result) <- "htest"
+
+  # If statement to plot or not
+  if (plot == TRUE) {
+    # Plot + result
+
+    # plot <- PLOT_PERMUTE()!!!
+
+    print(result)
+    return(plot)
+  } else if (plot == FALSE) {
+    # Result
     print(result)
   }
 }
 
 names <- c(replicate(50,"GROUP1"), replicate(50, "GROUP2"))
-test <- as.tibble(rnorm(100)) %>% mutate(names=names)
+test <- as_tibble(rnorm(100)) %>% mutate(names=names)
 
-permutation_median(test, "names", "value", "GROUP1", "GROUP2", plot = T)
+permutation_median(test, "names", "value", "GROUP1", "GROUP2", plot = F)
 ```
-
