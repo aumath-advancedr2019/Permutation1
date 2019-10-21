@@ -10,7 +10,7 @@ library(tidyverse)
 ```
 
 
-#Permutation basis:
+#Permutation mean:
 Mean, define number of permutaions, 10000 being default value.
 Define dataset, the column name for the column with the different categories you want to compare means for and the name of the columns with the counts.
 The names of the groups/categories.
@@ -158,4 +158,138 @@ test <- as.tibble(rnorm(100)) %>% mutate(names=names)
 
 permutation_median(test, "names", "value", "GROUP1", "GROUP2", plot = T)
 ```
+
+
+#Permutation linear model comparison
+Permutation that uses the F-distribution to compare two of three linear models (linear, quadratic or cubic).
+It needs a dataset and the names of the columns with the predictor and the response values and the kind of models to compare.
+
+```{r}
+permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm=10000, plot=F){
+  #permute and save difference in mean per round
+  dataset <- dataset %>% rename("predictor"=predictor, "response"=response)
+  
+  r <- rep(NA,no_perm)
+  
+  #For linear and quadratic model:
+  if ((model1=="linear" & model2=="quadratic")|(model2=="linear" & model1=="quadratic")){
+    # Observed models:
+    mod1 <- lm(response ~ predictor, data=dataset)
+    mod2 <- lm(response ~ poly(predictor, 2), data=dataset)
+    # Progress bar
+    pb <- txtProgressBar(min = 1, max = no_perm, style = 3)
+    for (i in 1:length(r)) {
+      setTxtProgressBar(pb, i)
+      #shuffle dataset
+      p <- cbind(pred = dataset$predictor, resp = sample(dataset$response)) %>% 
+        as_tibble()
+      
+      #make models
+      m1 <- lm(resp ~ pred, data=p)
+      
+      m2 <- lm(resp~ poly(pred, 2), data=p)
+      
+      #make F-distribution
+      f_dist <- anova(m1, m2)
+      
+      #add F-values to r-vector:
+      r[i] <- f_dist$`F`[2]
+      
+    }
+    close(pb)
+  }
+  
+  #For linear and cubic model:
+  if ((model1=="linear" & model2=="cubic")|(model2=="linear" & model1=="cubic")){
+    # Observed models:
+    mod1 <- lm(response ~ predictor, data=dataset)
+    mod2 <- lm(response ~ poly(predictor, 3), data=dataset)
+    # Progress bar
+    pb <- txtProgressBar(min = 1, max = no_perm, style = 3)
+    for (i in 1:length(r)) {
+      setTxtProgressBar(pb, i)
+      #shuffle dataset
+      p <- cbind(pred = dataset$predictor, resp = sample(dataset$response)) %>% 
+        as_tibble()
+      
+      #make models
+      m1 <- lm(resp ~ pred, data=p)
+      
+      m2 <- lm(resp~ poly(pred, 3), data=p)
+      
+      #make F-distribution
+      f_dist <- anova(m1, m2)
+      
+      #add F-values to r-vector:
+      r[i] <- f_dist$`F`[2]
+      
+    }
+    close(pb)
+  }
+  
+  #For quadratic and qubic model:
+  if ((model1=="quadratic" & model2=="cubic")|(model2=="quadratic" & model1=="cubic")){
+    # Observed models:
+    mod1 <- lm(response ~ poly(predictor,2), data=dataset)
+    mod2 <- lm(response ~ poly(predictor, 3), data=dataset)
+    # Progress bar
+    pb <- txtProgressBar(min = 1, max = no_perm, style = 3)
+    for (i in 1:length(r)) {
+      setTxtProgressBar(pb, i)
+      #shuffle dataset
+      p <- cbind(pred = dataset$predictor, resp = sample(dataset$response)) %>% 
+        as_tibble()
+      
+      #make models
+      m1 <- lm(resp ~ poly(pred,2), data=p)
+      
+      m2 <- lm(resp~ poly(pred, 3), data=p)
+      
+      #make F-distribution
+      f_dist <- anova(m1, m2)
+      
+      #add F-values to r-vector:
+      r[i] <- f_dist$`F`[2]
+      
+    }
+    close(pb)
+  }
+  #create df with values for null distribution
+  pd <- data.frame(i=1:length(r), value=r) %>% 
+    tbl_df()
+  
+  #the observed 
+  observed <- anova(mod1, mod2)$`F`[2]
+  
+  #plotting the null distribution and observed difference with the observed as a line
+  plot <- ggplot(data = pd, mapping = aes(x=value)) + 
+    geom_histogram(fill="darkblue", bins=50) +
+    geom_vline(color="darkorange",xintercept = as.numeric(observed)) + 
+    xlab("")+
+    ylab("Count")+
+    theme_minimal()
+  
+  #permuted p-value. 1 is added because we always expect the next one to be significant (of permuted values)
+  p_value <- ((sum((r) >= (observed))+1)/(length(r)+1))
+  return (list(p_value, plot))
+}
+
+```
+
+Testing data:
+```{r}
+x <- rnorm(100)
+y <- 4*x^2+3+rnorm(length(x),sd=15)
+data <- data.frame(x,y)
+
+plot(data)
+
+permutation_lm(data, "x","y","quadratic", "linear", plot=T)
+permutation_lm(data, "x","y","quadratic", "cubic", plot=T)
+```
+
+
+
+
+
 
