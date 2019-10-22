@@ -71,12 +71,13 @@ permutation_mean <- function(dataset, name, count, group1, group2, no_perm=10000
   } else if (plot == FALSE) {
     # Result
     print(result)
+    hist(r, col="darkblue", breaks = 50, main = "Mean permuted distribution", ylab = "Count"); abline(v = observed, col = "darkorange")
   }
 }
 
 
 names <- c(replicate(50,"Something"), replicate(50, "Something_else"))
-test <- as.tibble(rnorm(100)) %>% mutate(names=names)
+test <- as_tibble(rnorm(100)) %>% mutate(names=names)
 
 permutation_mean(test, "names", "value", "Something", "Something_else", plot = FALSE)
 
@@ -139,6 +140,7 @@ permutation_median <- function(dataset, name, count, group1, group2, no_perm=100
   } else if (plot == FALSE) {
     # Result
     print(result)
+    hist(r, col="darkblue", breaks = 50, main = "Median permuted distribution", ylab = "Count"); abline(v = observed, col = "darkorange")
   }
 }
 
@@ -148,19 +150,22 @@ test <- as_tibble(rnorm(100)) %>% mutate(names=names)
 permutation_median(test, "names", "value", "GROUP1", "GROUP2", plot = F)
 ```
 
-#Permutation linear model comparison
+
+### Permutation linear model comparison
+
 Permutation that uses the F-distribution to compare two of three linear models (linear, quadratic or cubic).
 It needs a dataset and the names of the columns with the predictor and the response values and the kind of models to compare.
 
 ```{r}
-permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm=10000, plot=F){
-  #permute and save difference in mean per round
-  dataset <- dataset %>% rename("predictor"=predictor, "response"=response)
+permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm=10000, nice_plot=F){
+  # Select columns in the dataset and remane those
+  dataset <- dataset[c(predictor,response)]      # Select
+  names(dataset) <- c("predictor","response")    # Rename
   
   r <- rep(NA,no_perm)
   
-  #For linear and quadratic model:
-  if ((model1=="linear" & model2=="quadratic")|(model2=="linear" & model1=="quadratic")){
+  # SELECT MODEL
+  if ((model1=="linear" & model2=="quadratic")|(model2=="linear" & model1=="quadratic")){    # For linear and quadratic model:
     # Observed models:
     mod1 <- lm(response ~ predictor, data=dataset)
     mod2 <- lm(response ~ poly(predictor, 2), data=dataset)
@@ -168,27 +173,23 @@ permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm
     pb <- txtProgressBar(min = 1, max = no_perm, style = 3)
     for (i in 1:length(r)) {
       setTxtProgressBar(pb, i)
-      #shuffle dataset
-      p <- cbind(pred = dataset$predictor, resp = sample(dataset$response)) %>% 
-        as_tibble()
+      # Shuffle dataset
+      p <- dataset
+      p$response <- sample(p$response)
       
-      #make models
-      m1 <- lm(resp ~ pred, data=p)
+      # Make models
+      m1 <- lm(response ~ predictor, data=p)
+      m2 <- lm(response ~ poly(predictor, 2), data=p)
       
-      m2 <- lm(resp~ poly(pred, 2), data=p)
-      
-      #make F-distribution
+      # Make F-distribution
       f_dist <- anova(m1, m2)
       
-      #add F-values to r-vector:
+      # Add F-values to r-vector:
       r[i] <- f_dist$`F`[2]
       
     }
     close(pb)
-  }
-  
-  #For linear and cubic model:
-  if ((model1=="linear" & model2=="cubic")|(model2=="linear" & model1=="cubic")){
+  } else if ((model1=="linear" & model2=="cubic")|(model2=="linear" & model1=="cubic")){    # For linear and cubic model:
     # Observed models:
     mod1 <- lm(response ~ predictor, data=dataset)
     mod2 <- lm(response ~ poly(predictor, 3), data=dataset)
@@ -196,27 +197,23 @@ permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm
     pb <- txtProgressBar(min = 1, max = no_perm, style = 3)
     for (i in 1:length(r)) {
       setTxtProgressBar(pb, i)
-      #shuffle dataset
-      p <- cbind(pred = dataset$predictor, resp = sample(dataset$response)) %>% 
-        as_tibble()
+      # Shuffle dataset
+      p <- dataset
+      p$response <- sample(p$response)
       
-      #make models
-      m1 <- lm(resp ~ pred, data=p)
+      # Make models
+      m1 <- lm(resp ~ predictor, data=p)
+      m2 <- lm(resp~ poly(predictor, 3), data=p)
       
-      m2 <- lm(resp~ poly(pred, 3), data=p)
-      
-      #make F-distribution
+      # Make F-distribution
       f_dist <- anova(m1, m2)
       
-      #add F-values to r-vector:
+      # Add F-values to r-vector:
       r[i] <- f_dist$`F`[2]
       
     }
     close(pb)
-  }
-  
-  #For quadratic and qubic model:
-  if ((model1=="quadratic" & model2=="cubic")|(model2=="quadratic" & model1=="cubic")){
+  } else if ((model1=="quadratic" & model2=="cubic")|(model2=="quadratic" & model1=="cubic")){    # For quadratic and cubic model:
     # Observed models:
     mod1 <- lm(response ~ poly(predictor,2), data=dataset)
     mod2 <- lm(response ~ poly(predictor, 3), data=dataset)
@@ -224,42 +221,54 @@ permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm
     pb <- txtProgressBar(min = 1, max = no_perm, style = 3)
     for (i in 1:length(r)) {
       setTxtProgressBar(pb, i)
-      #shuffle dataset
-      p <- cbind(pred = dataset$predictor, resp = sample(dataset$response)) %>% 
-        as_tibble()
+      # Shuffle dataset
+      p <- dataset
+      p$response <- sample(p$response)
       
-      #make models
-      m1 <- lm(resp ~ poly(pred,2), data=p)
+      # Make models
+      m1 <- lm(response ~ poly(predictor, 2), data=p)
+      m2 <- lm(response ~ poly(predictor, 3), data=p)
       
-      m2 <- lm(resp~ poly(pred, 3), data=p)
-      
-      #make F-distribution
+      # Make F-distribution
       f_dist <- anova(m1, m2)
       
-      #add F-values to r-vector:
+      # Add F-values to r-vector:
       r[i] <- f_dist$`F`[2]
       
     }
     close(pb)
+  } else {
+    print("Error: Models must be a combination of linear, quadractic or cubic.")
   }
-  #create df with values for null distribution
-  pd <- data.frame(i=1:length(r), value=r) %>% 
-    tbl_df()
   
-  #the observed 
+  # The observed value and format
   observed <- anova(mod1, mod2)$`F`[2]
-  
-  #plotting the null distribution and observed difference with the observed as a line
-  plot <- ggplot(data = pd, mapping = aes(x=value)) + 
-    geom_histogram(fill="darkblue", bins=50) +
-    geom_vline(color="darkorange",xintercept = as.numeric(observed)) + 
-    xlab("")+
-    ylab("Count")+
-    theme_minimal()
-  
-  #permuted p-value. 1 is added because we always expect the next one to be significant (of permuted values)
-  p_value <- ((sum((r) >= (observed))+1)/(length(r)+1))
-  return (list(p_value, plot))
+  estimate <- as.numeric(observed)
+  names(estimate) <- c("Observed F value between models")
+
+  # P-value and format
+  p_value <- ((sum(r) >= (observed))+1)/(length(r)+1)
+  names(p_value) <- "p-value"
+
+  # Result format
+  result = list(method = sprintf("Permutation Test (ANOVA) for %s and %s models", model1, model2), p.value = p_value,
+                  estimate = estimate,
+                  data.name = sprintf("Permutation for predictor %s and response %s", predictor, response))
+  class(result) <- "htest"
+
+  # If statement to plot or not
+  if (nice_plot == TRUE) {
+    # Plot + result
+
+    # plot <- PLOT_PERMUTE()!!!
+
+    print(result)
+    # return(plot)
+  } else if (nice_plot == FALSE) {
+    # Result
+    print(result)
+    hist(r, col="darkblue", breaks = 50, main = "F permuted distribution", ylab = "Count"); abline(v = observed, col = "darkorange")
+  }
 }
 
 ```
@@ -270,9 +279,7 @@ x <- rnorm(100)
 y <- 4*x^2+3+rnorm(length(x),sd=15)
 data <- data.frame(x,y)
 
-plot(data)
-
-permutation_lm(data, "x","y","quadratic", "linear", plot=T)
-permutation_lm(data, "x","y","quadratic", "cubic", plot=T)
+permutation_lm(data, "x","y","quadratic", "linear", nice_plot=F)
+# permutation_lm(data, "x","y","quadratic", "cubic", nice_plot=T)
 ```
 
