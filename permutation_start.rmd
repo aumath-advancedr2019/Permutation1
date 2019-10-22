@@ -10,7 +10,7 @@ output: html_document
 ```
 
 
-#Permutation mean:
+#Permutation basics:
 Mean, define number of permutaions, 10000 being default value.
 Define dataset, the column name for the column with the different categories you want to compare means for and the name of the columns with the counts.
 The names of the groups/categories.
@@ -19,7 +19,14 @@ The names of the groups/categories.
 
 ```{r}
 permutation_mean <- function(dataset, name, count, group1, group2, no_perm=10000, plot=FALSE){
-# Select columns in the dataset and remane those
+  # Verify if the columns exists and if the groups exists
+  if (any(names(dataset) == name) == FALSE | any(names(dataset) == count) == FALSE){
+    stop("One of the columns does not exists. Please, check the spelling or the dataset you are giving") 
+  } else if (any(unique(get(name,dataset)) == group1) == FALSE | any(unique(get(name,dataset)) == group2) == FALSE) {
+    stop("One of the groups does not exists. Please, check the spelling or the dataset you are giving")
+  }
+  
+  # Select columns in the dataset and remane those
   dataset <- dataset[c(count,name)]      # Select
   names(dataset) <- c("count","name")    # Rename
   
@@ -88,6 +95,13 @@ permutation_mean(test, "names", "value", "Something", "Something_else", plot = F
 
 ```{r}
 permutation_median <- function(dataset, name, count, group1, group2, no_perm=10000, plot=FALSE) {
+  # Verify if the columns exists and if the groups exists
+  if (any(names(dataset) == name) == FALSE | any(names(dataset) == count) == FALSE){
+    stop("One of the columns does not exists. Please, check the spelling or the dataset you are giving") 
+  } else if (any(unique(get(name,dataset)) == group1) == FALSE | any(unique(get(name,dataset)) == group2) == FALSE) {
+    stop("One of the groups does not exists. Please, check the spelling or the dataset you are giving")
+  }
+  
   # Select columns in the dataset and remane those
   dataset <- dataset[c(count,name)]      # Select
   names(dataset) <- c("count","name")    # Rename
@@ -158,6 +172,15 @@ It needs a dataset and the names of the columns with the predictor and the respo
 
 ```{r}
 permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm=10000, nice_plot=F){
+  # Verify if the columns exists and if the groups exists
+  accepted_models <- c("linear","quadratic","cubic")
+  
+  if (any(names(dataset) == predictor) == FALSE | any(names(dataset) == response) == FALSE){
+    stop("One of the columns does not exists. Please, check the spelling or the dataset you are giving") 
+  } else if (any(accepted_models == model1) == FALSE | any(accepted_models == model2) == FALSE) {
+    stop("Error: Models must be a combination of linear, quadractic or cubic.")
+  }
+  
   # Select columns in the dataset and remane those
   dataset <- dataset[c(predictor,response)]      # Select
   names(dataset) <- c("predictor","response")    # Rename
@@ -237,8 +260,6 @@ permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm
       
     }
     close(pb)
-  } else {
-    print("Error: Models must be a combination of linear, quadractic or cubic.")
   }
   
   # The observed value and format
@@ -280,6 +301,6 @@ y <- 4*x^2+3+rnorm(length(x),sd=15)
 data <- data.frame(x,y)
 
 permutation_lm(data, "x","y","quadratic", "linear", nice_plot=F)
-# permutation_lm(data, "x","y","quadratic", "cubic", nice_plot=T)
+permutation_lm(data, "x","y","quadratic", "cubic", nice_plot=T)
 ```
 
