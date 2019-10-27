@@ -6,7 +6,24 @@ output: html_document
 
 ```{r}
 # Load libraries
-# library(tidyverse)
+library(tidyverse)
+```
+
+#Plot perutation result:
+For putting in to different permutation functions to be able to plot the result of the permutations nicely
+```{r}
+plot_permutation <- function(data, observed_value){
+  #making dataset to put in to permutation plot
+  pd <- data.frame(i=1:length(data), value=data)
+    #plotting the null distribution and observed difference with the observed as a line
+  plot <- ggplot(data = pd, mapping = aes(x=value)) + 
+    geom_histogram(fill="darkblue", bins=50) +
+    geom_vline(color="darkorange",xintercept = as.numeric(observed_value)) + 
+    xlab("")+
+    ylab("Count")+
+    theme_minimal()
+  return(plot)
+}
 ```
 
 
@@ -64,10 +81,10 @@ permutation_mean <- function(dataset, name, count, group1, group2, no_perm=10000
   if (plot == TRUE) {
     # Plot + result
 
-    # plot <- PLOT_PERMUTE(r,observed)!!!
+    plot <- plot_permutation(r, observed)
 
     print(result)
-    # return(plot)
+    return(plot)
   } else if (plot == FALSE) {
     # Result
     print(result)
@@ -76,9 +93,9 @@ permutation_mean <- function(dataset, name, count, group1, group2, no_perm=10000
 
 
 names <- c(replicate(50,"Something"), replicate(50, "Something_else"))
-test <- as.tibble(rnorm(100)) %>% mutate(names=names)
-
-permutation_mean(test, "names", "value", "Something", "Something_else", plot = FALSE)
+test <- data.frame(rnorm(100), names)
+names(test) <- c("value","names")
+permutation_mean(test, "names", "value", "Something", "Something_else", plot = T)
 
 ```
 
@@ -132,7 +149,7 @@ permutation_median <- function(dataset, name, count, group1, group2, no_perm=100
   if (plot == TRUE) {
     # Plot + result
 
-    # plot <- PLOT_PERMUTE()!!!
+    plot <- plot_permutation(r, observed)
 
     print(result)
     # return(plot)
@@ -145,7 +162,7 @@ permutation_median <- function(dataset, name, count, group1, group2, no_perm=100
 names <- c(replicate(50,"GROUP1"), replicate(50, "GROUP2"))
 test <- as_tibble(rnorm(100)) %>% mutate(names=names)
 
-permutation_median(test, "names", "value", "GROUP1", "GROUP2", plot = F)
+permutation_median(test, "names", "value", "GROUP1", "GROUP2", plot = T)
 ```
 
 #Permutation linear model comparison
