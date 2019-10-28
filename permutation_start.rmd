@@ -6,7 +6,25 @@ output: html_document
 
 ```{r}
 # Load libraries
-# library(tidyverse)
+library(tidyverse)
+```
+
+#Plot perutation result:
+For putting in to different permutation functions to be able to plot the result of the permutations nicely
+```{r}
+plot_permutation <- function(data, observed_value, title){
+  #making dataset to put in to permutation plot
+  pd <- data.frame(i=1:length(data), value=data)
+    #plotting the null distribution and observed difference with the observed as a line
+  plot <- ggplot(data = pd, mapping = aes(x=value)) + 
+    geom_histogram(fill="darkblue", bins=50) +
+    geom_vline(color="darkorange",xintercept = as.numeric(observed_value)) + 
+    xlab("")+
+    ylab("Count")+
+    ggtitle(title, "The orange line is the observed value")+
+    theme_minimal()
+  return(plot)
+}
 ```
 
 
@@ -18,7 +36,7 @@ The names of the groups/categories.
 ### Permute mean
 
 ```{r}
-permutation_mean <- function(dataset, name, count, group1, group2, no_perm=10000, plot=FALSE){
+permutation_mean <- function(dataset, name, count, group1, group2, no_perm=10000, nice_plot=FALSE){
   # Verify if the columns exists and if the groups exists
   if (any(names(dataset) == name) == FALSE | any(names(dataset) == count) == FALSE){
     stop("One of the columns does not exists. Please, check the spelling or the dataset you are giving") 
@@ -30,6 +48,11 @@ permutation_mean <- function(dataset, name, count, group1, group2, no_perm=10000
   dataset <- dataset[c(count,name)]      # Select
   names(dataset) <- c("count","name")    # Rename
   
+    #Check if the dataset is normally distributed, and give a warning, if it is:
+  if (shapiro.test(dataset$count)$p.value>0.05){
+    warning("Data is normally distributed, it might be better to use a parametric test (e.g. t-test)")
+  }
+
   r <- rep(NA,no_perm)
   
   # Progress bar
@@ -41,11 +64,11 @@ permutation_mean <- function(dataset, name, count, group1, group2, no_perm=10000
     p <- dataset
     p$count <- sample(p$count)
 
-    #calculate median for group 1 and group 2
+    #calculate mean for group 1 and group 2
     g1 <- mean(p[which(p$name == group1),]$count)
     g2 <- mean(p[which(p$name == group2),]$count)
 
-    #add difference in median to vector
+    #add difference in mean to vector
     r[i] <- as.numeric(g1) - as.numeric(g2)
   }
   close(pb)
@@ -68,14 +91,14 @@ permutation_mean <- function(dataset, name, count, group1, group2, no_perm=10000
   class(result) <- "htest"
 
   # If statement to plot or not
-  if (plot == TRUE) {
+  if (nice_plot == TRUE) {
     # Plot + result
 
-    # plot <- PLOT_PERMUTE(r,observed)!!!
+    plot <- plot_permutation(r, observed, "Permutation test (Mean)")
 
     print(result)
-    # return(plot)
-  } else if (plot == FALSE) {
+    return(plot)
+  } else if (nice_plot == FALSE) {
     # Result
     print(result)
     hist(r, col="darkblue", breaks = 50, main = "Mean permuted distribution", ylab = "Count"); abline(v = observed, col = "darkorange")
@@ -84,9 +107,9 @@ permutation_mean <- function(dataset, name, count, group1, group2, no_perm=10000
 
 
 names <- c(replicate(50,"Something"), replicate(50, "Something_else"))
-test <- as_tibble(rnorm(100)) %>% mutate(names=names)
-
-permutation_mean(test, "names", "value", "Something", "Something_else", plot = FALSE)
+test <- data.frame(rnorm(100), names)
+names(test) <- c("value","names")
+permutation_mean(test, "names", "value", "Something", "Something_else", nice_plot = F)
 
 ```
 
@@ -94,7 +117,7 @@ permutation_mean(test, "names", "value", "Something", "Something_else", plot = F
 ### Permutation median:
 
 ```{r}
-permutation_median <- function(dataset, name, count, group1, group2, no_perm=10000, plot=FALSE) {
+permutation_median <- function(dataset, name, count, group1, group2, no_perm=10000, nice_plot=FALSE) {
   # Verify if the columns exists and if the groups exists
   if (any(names(dataset) == name) == FALSE | any(names(dataset) == count) == FALSE){
     stop("One of the columns does not exists. Please, check the spelling or the dataset you are giving") 
@@ -106,6 +129,11 @@ permutation_median <- function(dataset, name, count, group1, group2, no_perm=100
   dataset <- dataset[c(count,name)]      # Select
   names(dataset) <- c("count","name")    # Rename
   
+    #Check if the dataset is normally distributed, and give a warning, if it is:
+  if (shapiro.test(dataset$count)$p.value>0.05){
+    warning("Data is normally distributed, it might be better to use a parametric test")
+  }
+
   r <- rep(NA,no_perm)
   
   # Progress bar
@@ -144,14 +172,14 @@ permutation_median <- function(dataset, name, count, group1, group2, no_perm=100
   class(result) <- "htest"
 
   # If statement to plot or not
-  if (plot == TRUE) {
+  if (nice_plot == TRUE) {
     # Plot + result
 
-    # plot <- PLOT_PERMUTE()!!!
+    plot <- plot_permutation(r, observed, "Permutation test (Median")
 
     print(result)
-    # return(plot)
-  } else if (plot == FALSE) {
+    return(plot)
+  } else if (nice_plot == FALSE) {
     # Result
     print(result)
     hist(r, col="darkblue", breaks = 50, main = "Median permuted distribution", ylab = "Count"); abline(v = observed, col = "darkorange")
@@ -161,7 +189,7 @@ permutation_median <- function(dataset, name, count, group1, group2, no_perm=100
 names <- c(replicate(50,"GROUP1"), replicate(50, "GROUP2"))
 test <- as_tibble(rnorm(100)) %>% mutate(names=names)
 
-permutation_median(test, "names", "value", "GROUP1", "GROUP2", plot = F)
+permutation_median(test, "names", "value", "GROUP1", "GROUP2", nice_plot = T)
 ```
 
 
@@ -169,6 +197,7 @@ permutation_median(test, "names", "value", "GROUP1", "GROUP2", plot = F)
 
 Permutation that uses the F-distribution to compare two of three linear models (linear, quadratic or cubic).
 It needs a dataset and the names of the columns with the predictor and the response values and the kind of models to compare.
+It will give the p-value for the more complicated model not being the better.
 
 ```{r}
 permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm=10000, nice_plot=F){
@@ -184,6 +213,11 @@ permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm
   # Select columns in the dataset and remane those
   dataset <- dataset[c(predictor,response)]      # Select
   names(dataset) <- c("predictor","response")    # Rename
+  
+    #Check if the dataset is normally distributed, and give a warning, if it is:
+  if (shapiro.test(dataset$response)$p.value>0.05){
+    warning("Data is normally distributed, it might be better to use a parametric test, (e.g. anova)")
+  }
   
   r <- rep(NA,no_perm)
   
@@ -268,7 +302,7 @@ permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm
   names(estimate) <- c("Observed F value between models")
 
   # P-value and format
-  p_value <- ((sum(r) >= (observed))+1)/(length(r)+1)
+  p_value <- (sum((r) >= (observed))+1)/(length(r)+1)
   names(p_value) <- "p-value"
 
   # Result format
@@ -281,10 +315,10 @@ permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm
   if (nice_plot == TRUE) {
     # Plot + result
 
-    # plot <- PLOT_PERMUTE()!!!
+    plot <- plot_permutation(r,observed, "Permutation test (Model comparison, F-test)")
 
     print(result)
-    # return(plot)
+    return(plot)
   } else if (nice_plot == FALSE) {
     # Result
     print(result)
@@ -297,10 +331,10 @@ permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm
 Testing data:
 ```{r}
 x <- rnorm(100)
-y <- 4*x^2+3+rnorm(length(x),sd=15)
+y <- 4*x^2+3+10*rnorm(100)
 data <- data.frame(x,y)
 
-permutation_lm(data, "x","y","quadratic", "linear", nice_plot=F)
+permutation_lm(data, "x","y","quadratic", "linear", nice_plot=T)
 permutation_lm(data, "x","y","quadratic", "cubic", nice_plot=T)
 ```
 
