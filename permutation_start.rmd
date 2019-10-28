@@ -48,6 +48,11 @@ permutation_mean <- function(dataset, name, count, group1, group2, no_perm=10000
   dataset <- dataset[c(count,name)]      # Select
   names(dataset) <- c("count","name")    # Rename
   
+    #Check if the dataset is normally distributed, and give a warning, if it is:
+  if (shapiro.test(dataset$count)$p.value>0.05){
+    warning("Data is normally distributed, it might be better to use a parametric test (e.g. t-test)")
+  }
+
   r <- rep(NA,no_perm)
   
   # Progress bar
@@ -104,7 +109,8 @@ permutation_mean <- function(dataset, name, count, group1, group2, no_perm=10000
 names <- c(replicate(50,"Something"), replicate(50, "Something_else"))
 test <- data.frame(rnorm(100), names)
 names(test) <- c("value","names")
-permutation_mean(test, "names", "value", "Something", "Something_else", nice_plot = T)
+permutation_mean(test, "names", "value", "Something", "Something_else", nice_plot = F)
+
 ```
 
 
@@ -123,6 +129,11 @@ permutation_median <- function(dataset, name, count, group1, group2, no_perm=100
   dataset <- dataset[c(count,name)]      # Select
   names(dataset) <- c("count","name")    # Rename
   
+    #Check if the dataset is normally distributed, and give a warning, if it is:
+  if (shapiro.test(dataset$count)$p.value>0.05){
+    warning("Data is normally distributed, it might be better to use a parametric test")
+  }
+
   r <- rep(NA,no_perm)
   
   # Progress bar
@@ -202,6 +213,11 @@ permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm
   # Select columns in the dataset and remane those
   dataset <- dataset[c(predictor,response)]      # Select
   names(dataset) <- c("predictor","response")    # Rename
+  
+    #Check if the dataset is normally distributed, and give a warning, if it is:
+  if (shapiro.test(dataset$response)$p.value>0.05){
+    warning("Data is normally distributed, it might be better to use a parametric test, (e.g. anova)")
+  }
   
   r <- rep(NA,no_perm)
   
@@ -314,8 +330,8 @@ permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm
 
 Testing data:
 ```{r}
-x <- rnorm(10)
-y <- 4*x^2+3
+x <- rnorm(100)
+y <- 4*x^2+3+10*rnorm(100)
 data <- data.frame(x,y)
 
 permutation_lm(data, "x","y","quadratic", "linear", nice_plot=T)
