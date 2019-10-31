@@ -1,0 +1,33 @@
+\name{permutation_mean}
+\alias{permutation_mean}
+\title{
+permutation_mean
+}
+\description{
+}
+\usage{
+permutation_mean()
+}
+\arguments{
+  \item{x}{
+}
+}
+\details{
+}
+\value{
+}
+\references{
+}
+\author{
+}
+\note{
+}
+\seealso{
+}
+\examples{
+permutation_mean()
+{
+  }
+}
+\keyword{ ~kwd1 }% use one of  RShowDoc("KEYWORDS")
+\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
