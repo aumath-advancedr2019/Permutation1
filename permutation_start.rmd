@@ -325,7 +325,6 @@ permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm
     hist(r, col="darkblue", breaks = 50, main = "F permuted distribution", ylab = "Count"); abline(v = observed, col = "darkorange")
   }
 }
-
 ```
 
 Testing data:
@@ -335,6 +334,6 @@ y <- 4*x^2+3+10*rnorm(100)
 data <- data.frame(x,y)
 
 permutation_lm(data, "x","y","quadratic", "linear", nice_plot=T)
-permutation_lm(data, "x","y","quadratic", "cubic", nice_plot=T)
+permutation_lm(data, "x","y","quadratic", "cubic", nice_plot=F)
 ```
 

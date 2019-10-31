@@ -1,13 +1,13 @@
-\name{permutation_mean}
-\alias{permutation_mean}
+\name{permutation_median}
+\alias{permutation_median}
 \title{
-permutation_mean
+permutation_median
 }
 \description{
-Performs a permutation test on a dataset (dataframe) testing if the mean of two different groups are significantly different (the difference in means are significantly different from 0). It prints a permutation-plot with the permuted null-distribution and the observed value (simple or nice depending on choice), and gives a p-value of the means being the same.
+Performs a permutation test on a dataset (dataframe) testing if the median of two different groups are significantly different (the difference in medians are significantly different from 0). It prints a permutation-plot with the permuted null-distribution and the observed value (simple or nice depending on choice) and gives a p-value of the medians being the same.
 }
 \usage{
-permutation_mean(dataset, name, count, group1, group2, no_perm, nice_plot)
+permutation_median(dataset, name, count, group1, group2, no_perm, nice_plot)
 }
 \arguments{
   \item{dataset}{the dataset containing the data you want to test in the form of a data frame – the data needs to contain (at least) a column with the names of the two groups you want to test against each other and a column with the values of the different cases for these groups.}
