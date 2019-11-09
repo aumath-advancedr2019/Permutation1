@@ -16,8 +16,6 @@ We have different functions depending on what statistical value you want to test
 
 ##### Loading the libraries:
 ```{r message=FALSE, warning=FALSE}
-library(magrittr)
-library(ggplot2)
 library(Permutation1)
 ```
 
@@ -35,7 +33,7 @@ names(test) <- c("value","names")
 for testing if the means of the same groups are significantly different:
 Here the null-distribution made by the permutation function will be distributed around 0.
 ```{r}
-p <- permutation_mean(test,"names","value","Group1","Group2", no_perm=10000, nice_plot = TRUE)
+p <- permutation_mean(test,"names","value","Group1","Group2", no_perm=10000, nice_plot=TRUE, progress=FALSE)
 p
 ```
 
@@ -58,7 +56,7 @@ for testing if the median of the same groups are significantly different:
 Here the null-distribution made by the permutation function will be distributed around 0.
 This works the same way as the permutations_mean() function
 ```{r}
-p <- permutation_median(test,"names","value","Group1","Group2", no_perm=10000, nice_plot = TRUE)
+p <- permutation_median(test,"names","value","Group1","Group2", no_perm=10000, nice_plot=TRUE, progress=FALSE)
 p
 ```
 
@@ -86,7 +84,7 @@ Here we can actually see, that there probably is a quadratic depencence between 
 for testing if the quadratic model fits the data significantly better than the linear model
 Here the null-distribution will mimic an F-distribution
 ```{r}
-p <- permutation_lm(data, "x","y","quadratic", "linear", nice_plot=T)
+p <- permutation_lm(data, "x","y","quadratic", "linear", nice_plot=TRUE, progress=FALSE)
 p
 ```
 
@@ -99,7 +97,7 @@ Since it is an F-distributed null-model, all values will be above 0, and we do n
 
 We could also check if the cubic model works better than the quadratic model then:
 ```{r}
-p <- permutation_lm(data, "x","y","cubic","quadratic", nice_plot=T)
+p <- permutation_lm(data, "x","y","cubic","quadratic", nice_plot=TRUE, progress=FALSE)
 p
 ```
 
