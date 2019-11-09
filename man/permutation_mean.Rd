@@ -17,6 +17,7 @@ permutation_mean(dataset, name, count, group1, group2, no_perm, nice_plot)
   \item{group2}{the name of the other group (string)}
   \item{no_perm}{the number of permutations to make, default=10000}
   \item{nice_plot}{a logic value indicating whether a nice plot should be printed (requires ggplot2), default=F (as opposed to a simple plot)}
+  \item{progress}{a logic value indicating whether a progress bar should be printed, default=T}
 }
 \details{
 The calculations that are done in this function are the difference in means (mean(group1)-mean(group2)). This will be the observed value. The dataset values are then randomly shuffled and the difference in mean are calculated again and saved. This is done as many times as the no_perm is defined as, and thereby a null-distribution is made. A p-value is then calculated as the amount of times the absolute value of the permuted values are bigger or equal to the absolute value of the observed + 1 divided by the total amount of permutations + 1:
@@ -43,4 +44,9 @@ Adrián Gómez & Solveig Østergaard
 \seealso{
 }
 \examples{
+set.seed(0)
+names <- c(replicate(50,"Group1"), replicate(50, "Group2"))
+test <- data.frame(c(sample(c(1:100), 50, replace=T), sample(c(30:100), 50, replace=T)), names)
+names(test) <- c("value","names")
+permutation_mean(test,"names","value","Group1","Group2", no_perm=10000, nice_plot=TRUE, progress=TRUE)
 }

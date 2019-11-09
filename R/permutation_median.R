@@ -1,6 +1,6 @@
 # Permutation median function
 
-permutation_median <- function(dataset, name, count, group1, group2, no_perm=10000, nice_plot=FALSE) {
+permutation_median <- function(dataset, name, count, group1, group2, no_perm=10000, nice_plot=FALSE, progress=TRUE) {
   # Verify if the columns exists and if the groups exists
   if (any(names(dataset) == name) == FALSE | any(names(dataset) == count) == FALSE){
     stop("One of the columns does not exists. Please, check the spelling or the dataset you are giving") 
@@ -19,23 +19,38 @@ permutation_median <- function(dataset, name, count, group1, group2, no_perm=100
   
   r <- rep(NA,no_perm)
   
-  # Progress bar
-  pb <- txtProgressBar(min = 1, max = no_perm, style = 3)
+  if (progress == TRUE) {
+    # Progress bar
+    pb <- txtProgressBar(min = 1, max = no_perm, style = 3)
   
-  for (i in 1:length(r)) {
-    setTxtProgressBar(pb, i)
-    #shuffle dataset
-    p <- dataset
-    p$count <- sample(p$count)
+    for (i in 1:length(r)) {
+      setTxtProgressBar(pb, i)
+      #shuffle dataset
+      p <- dataset
+      p$count <- sample(p$count)
     
-    #calculate median for group 1 and group 2
-    g1 <- median(p[which(p$name == group1),]$count)
-    g2 <- median(p[which(p$name == group2),]$count)
+      #calculate median for group 1 and group 2
+      g1 <- median(p[which(p$name == group1),]$count)
+      g2 <- median(p[which(p$name == group2),]$count)
     
-    #add difference in median to vector
-    r[i] <- as.numeric(g1) - as.numeric(g2)
+      #add difference in median to vector
+      r[i] <- as.numeric(g1) - as.numeric(g2)
+    }
+    close(pb)
+  } else{
+    for (i in 1:length(r)) {
+      #shuffle dataset
+      p <- dataset
+      p$count <- sample(p$count)
+      
+      #calculate median for group 1 and group 2
+      g1 <- median(p[which(p$name == group1),]$count)
+      g2 <- median(p[which(p$name == group2),]$count)
+      
+      #add difference in median to vector
+      r[i] <- as.numeric(g1) - as.numeric(g2)
+    }
   }
-  close(pb)
   
   # The observed difference
   m1 <- median(dataset[which(dataset$name == group1),]$count)

@@ -17,6 +17,7 @@ permutation_lm(dataset, predictor, response, model1, model2, no_perm, nice_plot)
   \item{model2}{the name of the other model you want to test (string), possible values: “linear”, “quadratic” or “cubic”}
   \item{no_perm}{the number of permutations to make, default=10000}
   \item{nice_plot}{a logic value indicating whether a nice plot should be printed (requires ggplot2), default=F (as opposed to a simple plot)}
+  \item{progress}{a logic value indicating whether a progress bar should be printed, default=T}
 }
 \details{
 The calculations that are done in this function are an anova of the chosen two models of the dataset, giving a value from the F-distribution. The two models are made, depending on which models are chosen, using the build-in lm() function. The F-value calculated will be the observed value. The dataset values are then randomly shuffled, the two models are made again, and the F-value is calculated and saved – this is done as many times as the no_perm is defined as. This will give a “new F-distribution”, that will be our null-distribution, where a p-value then can be calculated as the amount of times the value of the permuted values are bigger or equal to the value of the observed + 1, divided by the total amount of permutations + 1:
@@ -42,4 +43,10 @@ Adrián Gómez & Solveig Østergaard
 \seealso{
 }
 \examples{
+set.seed(0)
+x <- sample(c(-10:10), 100, replace=T)
+y <- 4*x^2+3+50*sample(c(-10:10), 100, replace=T)
+data <- data.frame(x,y)
+permutation_lm(data, "x","y","quadratic", "linear", nice_plot = TRUE)
+permutation_lm(data, "x","y","cubic","quadratic", nice_plot=TRUE, progress=FALSE)
 }

@@ -1,6 +1,6 @@
 # Permutation lm function
 
-permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm=10000, nice_plot=F){
+permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm=10000, nice_plot=F, progress=TRUE){
   # Verify if the columns exists and if the groups exists
   accepted_models <- c("linear","quadratic","cubic")
   
@@ -21,80 +21,146 @@ permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm
   
   r <- rep(NA,no_perm)
   
-  # SELECT MODEL
-  if ((model1=="linear" & model2=="quadratic")|(model2=="linear" & model1=="quadratic")){    # For linear and quadratic model:
-    # Observed models:
-    mod1 <- lm(response ~ predictor, data=dataset)
-    mod2 <- lm(response ~ poly(predictor, 2), data=dataset)
-    # Progress bar
-    pb <- txtProgressBar(min = 1, max = no_perm, style = 3)
-    for (i in 1:length(r)) {
-      setTxtProgressBar(pb, i)
-      # Shuffle dataset
-      p <- dataset
-      p$response <- sample(p$response)
-      
-      # Make models
-      m1 <- lm(response ~ predictor, data=p)
-      m2 <- lm(response ~ poly(predictor, 2), data=p)
-      
-      # Make F-distribution
-      f_dist <- anova(m1, m2)
-      
-      # Add F-values to r-vector:
-      r[i] <- f_dist$`F`[2]
-      
+  if (progress == TRUE) {
+    # SELECT MODEL
+    if ((model1=="linear" & model2=="quadratic")|(model2=="linear" & model1=="quadratic")){    # For linear and quadratic model:
+      # Observed models:
+      mod1 <- lm(response ~ predictor, data=dataset)
+      mod2 <- lm(response ~ poly(predictor, 2), data=dataset)
+      # Progress bar
+      pb <- txtProgressBar(min = 1, max = no_perm, style = 3)
+      for (i in 1:length(r)) {
+        setTxtProgressBar(pb, i)
+        # Shuffle dataset
+        p <- dataset
+        p$response <- sample(p$response)
+        
+        # Make models
+        m1 <- lm(response ~ predictor, data=p)
+        m2 <- lm(response ~ poly(predictor, 2), data=p)
+        
+        # Make F-distribution
+        f_dist <- anova(m1, m2)
+        
+        # Add F-values to r-vector:
+        r[i] <- f_dist$`F`[2]
+        
+      }
+      close(pb)
+    } else if ((model1=="linear" & model2=="cubic")|(model2=="linear" & model1=="cubic")){    # For linear and cubic model:
+      # Observed models:
+      mod1 <- lm(response ~ predictor, data=dataset)
+      mod2 <- lm(response ~ poly(predictor, 3), data=dataset)
+      # Progress bar
+      pb <- txtProgressBar(min = 1, max = no_perm, style = 3)
+      for (i in 1:length(r)) {
+        setTxtProgressBar(pb, i)
+        # Shuffle dataset
+        p <- dataset
+        p$response <- sample(p$response)
+        
+        # Make models
+        m1 <- lm(resp ~ predictor, data=p)
+        m2 <- lm(resp~ poly(predictor, 3), data=p)
+        
+        # Make F-distribution
+        f_dist <- anova(m1, m2)
+        
+        # Add F-values to r-vector:
+        r[i] <- f_dist$`F`[2]
+        
+      }
+      close(pb)
+    } else if ((model1=="quadratic" & model2=="cubic")|(model2=="quadratic" & model1=="cubic")){    # For quadratic and cubic model:
+      # Observed models:
+      mod1 <- lm(response ~ poly(predictor,2), data=dataset)
+      mod2 <- lm(response ~ poly(predictor, 3), data=dataset)
+      # Progress bar
+      pb <- txtProgressBar(min = 1, max = no_perm, style = 3)
+      for (i in 1:length(r)) {
+        setTxtProgressBar(pb, i)
+        # Shuffle dataset
+        p <- dataset
+        p$response <- sample(p$response)
+        
+        # Make models
+        m1 <- lm(response ~ poly(predictor, 2), data=p)
+        m2 <- lm(response ~ poly(predictor, 3), data=p)
+        
+        # Make F-distribution
+        f_dist <- anova(m1, m2)
+        
+        # Add F-values to r-vector:
+        r[i] <- f_dist$`F`[2]
+        
+      }
+      close(pb)
     }
-    close(pb)
-  } else if ((model1=="linear" & model2=="cubic")|(model2=="linear" & model1=="cubic")){    # For linear and cubic model:
-    # Observed models:
-    mod1 <- lm(response ~ predictor, data=dataset)
-    mod2 <- lm(response ~ poly(predictor, 3), data=dataset)
-    # Progress bar
-    pb <- txtProgressBar(min = 1, max = no_perm, style = 3)
-    for (i in 1:length(r)) {
-      setTxtProgressBar(pb, i)
-      # Shuffle dataset
-      p <- dataset
-      p$response <- sample(p$response)
-      
-      # Make models
-      m1 <- lm(resp ~ predictor, data=p)
-      m2 <- lm(resp~ poly(predictor, 3), data=p)
-      
-      # Make F-distribution
-      f_dist <- anova(m1, m2)
-      
-      # Add F-values to r-vector:
-      r[i] <- f_dist$`F`[2]
-      
+  } else {
+    # SELECT MODEL
+    if ((model1=="linear" & model2=="quadratic")|(model2=="linear" & model1=="quadratic")){    # For linear and quadratic model:
+      # Observed models:
+      mod1 <- lm(response ~ predictor, data=dataset)
+      mod2 <- lm(response ~ poly(predictor, 2), data=dataset)
+      # Progress bar
+      for (i in 1:length(r)) {
+        # Shuffle dataset
+        p <- dataset
+        p$response <- sample(p$response)
+        
+        # Make models
+        m1 <- lm(response ~ predictor, data=p)
+        m2 <- lm(response ~ poly(predictor, 2), data=p)
+        
+        # Make F-distribution
+        f_dist <- anova(m1, m2)
+        
+        # Add F-values to r-vector:
+        r[i] <- f_dist$`F`[2]
+      }
+    } else if ((model1=="linear" & model2=="cubic")|(model2=="linear" & model1=="cubic")){    # For linear and cubic model:
+      # Observed models:
+      mod1 <- lm(response ~ predictor, data=dataset)
+      mod2 <- lm(response ~ poly(predictor, 3), data=dataset)
+      # Progress bar
+      for (i in 1:length(r)) {
+        # Shuffle dataset
+        p <- dataset
+        p$response <- sample(p$response)
+        
+        # Make models
+        m1 <- lm(resp ~ predictor, data=p)
+        m2 <- lm(resp~ poly(predictor, 3), data=p)
+        
+        # Make F-distribution
+        f_dist <- anova(m1, m2)
+        
+        # Add F-values to r-vector:
+        r[i] <- f_dist$`F`[2]
+      }
+    } else if ((model1=="quadratic" & model2=="cubic")|(model2=="quadratic" & model1=="cubic")){    # For quadratic and cubic model:
+      # Observed models:
+      mod1 <- lm(response ~ poly(predictor,2), data=dataset)
+      mod2 <- lm(response ~ poly(predictor, 3), data=dataset)
+      # Progress bar
+       for (i in 1:length(r)) {
+        # Shuffle dataset
+        p <- dataset
+        p$response <- sample(p$response)
+        
+        # Make models
+        m1 <- lm(response ~ poly(predictor, 2), data=p)
+        m2 <- lm(response ~ poly(predictor, 3), data=p)
+        
+        # Make F-distribution
+        f_dist <- anova(m1, m2)
+        
+        # Add F-values to r-vector:
+        r[i] <- f_dist$`F`[2]
+      }
     }
-    close(pb)
-  } else if ((model1=="quadratic" & model2=="cubic")|(model2=="quadratic" & model1=="cubic")){    # For quadratic and cubic model:
-    # Observed models:
-    mod1 <- lm(response ~ poly(predictor,2), data=dataset)
-    mod2 <- lm(response ~ poly(predictor, 3), data=dataset)
-    # Progress bar
-    pb <- txtProgressBar(min = 1, max = no_perm, style = 3)
-    for (i in 1:length(r)) {
-      setTxtProgressBar(pb, i)
-      # Shuffle dataset
-      p <- dataset
-      p$response <- sample(p$response)
-      
-      # Make models
-      m1 <- lm(response ~ poly(predictor, 2), data=p)
-      m2 <- lm(response ~ poly(predictor, 3), data=p)
-      
-      # Make F-distribution
-      f_dist <- anova(m1, m2)
-      
-      # Add F-values to r-vector:
-      r[i] <- f_dist$`F`[2]
-      
-    }
-    close(pb)
   }
+  
   
   # The observed value and format
   observed <- anova(mod1, mod2)$`F`[2]
