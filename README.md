@@ -5,7 +5,7 @@ Project for developing a permutation function.
 ## Install
 
 ```{r}
-devtools::install_github("aumath-advancedr2019/Permutation1")
+devtools::install_github("aumath-advancedr2019/Permutation1", build_vignettes = TRUE)
 ```
 
 ## Team setup
