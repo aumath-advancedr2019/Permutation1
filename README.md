@@ -2,6 +2,12 @@
 
 Project for developing a permutation function.
 
+## Install
+
+```{r}
+devtools::install_github("aumath-advancedr2019/Permutation1")
+```
+
 ## Team setup
 
 Adrián:
