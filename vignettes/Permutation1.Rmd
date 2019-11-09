@@ -1,8 +1,11 @@
 ---
+title: "Permutation1"
 author: "Adrián & Solveig"
-title: "Introduction to PACKAGENAME"
-date: "2019-10-31"
-output: html_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Permutation1}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 The purpose of this package is to have some nice, userfriendly functions, that does permutations in a way that is easy to understand. All of them gives a plot and a statistical value plus a p-value.
@@ -13,7 +16,9 @@ We have different functions depending on what statistical value you want to test
 
 ##### Loading the libraries:
 ```{r message=FALSE, warning=FALSE}
+library(magrittr)
 library(ggplot2)
+library(Permutation1)
 ```
 
 
