@@ -7,7 +7,7 @@ This is a package containing different functions for making permutations. They a
 We have different functions depending on what statistical value you want to test, e.g. difference in mean.
 }
 \usage{
-  Functions in this package (see more about the specific functions in the documentation about them):
+Functions in this package (see more about the specific functions in the documentation about them):
   permutation_mean()
   permutation_median()
   permutation_lm()

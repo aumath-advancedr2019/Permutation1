@@ -8,6 +8,12 @@ Project for developing a permutation function.
 devtools::install_github("aumath-advancedr2019/Permutation1", build_vignettes = TRUE)
 ```
 
+## Troubleshooting
+
+In the case that after installing the package R prints an error about corruption of the package you can solve the issue by:
+- Restating R and loading package again
+- Remove and Reinstall package from github
+
 ## Team setup
 
 Adrián:
