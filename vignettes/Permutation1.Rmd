@@ -32,7 +32,7 @@ names(test) <- c("value","names")
 # Using permutation_mean() 
 for testing if the means of the same groups are significantly different:
 Here the null-distribution made by the permutation function will be distributed around 0.
-```{r}
+```{r fig.width=6, fig.height=4, fig.align='center'}
 p <- permutation_mean(test,"names","value","Group1","Group2", no_perm=10000, nice_plot=TRUE, progress=FALSE)
 p
 ```
@@ -55,7 +55,7 @@ p$p.value
 for testing if the median of the same groups are significantly different:
 Here the null-distribution made by the permutation function will be distributed around 0.
 This works the same way as the permutations_mean() function
-```{r}
+```{r fig.width=6, fig.height=4, fig.align='center'}
 p <- permutation_median(test,"names","value","Group1","Group2", no_perm=10000, nice_plot=TRUE, progress=FALSE)
 p
 ```
@@ -83,7 +83,7 @@ Here we can actually see, that there probably is a quadratic depencence between 
 # Using permutation_lm() 
 for testing if the quadratic model fits the data significantly better than the linear model
 Here the null-distribution will mimic an F-distribution
-```{r}
+```{r fig.width=6, fig.height=4, fig.align='center'}
 p <- permutation_lm(data, "x","y","quadratic", "linear", nice_plot=TRUE, progress=FALSE)
 p
 ```
@@ -96,7 +96,7 @@ $$p-val = \frac{\sum (PermutedValue\ge ObservedValue)+1}{\#Permutations+1}$$
 Since it is an F-distributed null-model, all values will be above 0, and we do not need to take the aboslute values.
 
 We could also check if the cubic model works better than the quadratic model then:
-```{r}
+```{r fig.width=6, fig.height=4, fig.align='center'}
 p <- permutation_lm(data, "x","y","cubic","quadratic", nice_plot=TRUE, progress=FALSE)
 p
 ```
