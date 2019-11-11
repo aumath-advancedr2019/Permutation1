@@ -80,7 +80,7 @@ data <- data.frame(x,y)
 ```
 
 We know that a qudratic model, $x^2$, should fit the data the best, but it is allways a good ide to look at the data making a simple plot, since it is nice to see the dependence between the variables:
-```{r echo=FALSE}
+```{r echo=FALSE, r fig.width=6, fig.height=4, fig.align='center'}
 if (ggplot_status){
 data %>% ggplot(aes(x,y))+
   geom_point()+
