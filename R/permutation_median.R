@@ -73,7 +73,7 @@ permutation_median <- function(dataset, name, count, group1, group2, no_perm=100
   if (nice_plot == TRUE) {
     # Plot + result
     
-    plot <- plot_permutation(r, observed, "Permutation test (Median")
+    plot <- plot_permutation(r, observed, "Permutation test (Median)")
     
     print(plot)
     return(result)
