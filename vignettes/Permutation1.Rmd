@@ -1,6 +1,6 @@
 ---
 title: "Permutation1"
-author: "Adrián & Solveig"
+author: "Adrián Gómez & Solveig Østergaard"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Permutation1}
