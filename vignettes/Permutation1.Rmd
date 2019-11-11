@@ -19,6 +19,14 @@ We have different functions depending on what statistical value you want to test
 library(Permutation1)
 ```
 
+```{r include=FALSE}
+if ("ggplot2" %in% (.packages())){
+  ggplot_status=TRUE
+}else{
+  ggplot_status=FALSE
+}
+```
+
 
 ##### Making small dataset for demonstrating the permutation of the mean and the median:
 This dataset is not normally distributed, and thereby it would make sense to run a permutation test to check if the groups have the same mean or median.
@@ -33,12 +41,8 @@ names(test) <- c("value","names")
 for testing if the means of the same groups are significantly different:
 Here the null-distribution made by the permutation function will be distributed around 0.
 ```{r fig.width=6, fig.height=4, fig.align='center'}
-if ("ggplot2" %in% (.packages())){
-p <- permutation_mean(test,"names","value","Group1","Group2", no_perm=10000, nice_plot=TRUE, progress=FALSE)
-p} else {
-p <- permutation_mean(test,"names","value","Group1","Group2", no_perm=10000, nice_plot=FALSE, progress=FALSE)
+p <- permutation_mean(test,"names","value","Group1","Group2", no_perm=10000, nice_plot=ggplot_status, progress=FALSE)
 p
-}
 ```
 
 Here we get a p-value of $3*10^{-4}$, and with a 5% significance level we can reject that the mean of the two groups are the same.
@@ -60,13 +64,8 @@ for testing if the median of the same groups are significantly different:
 Here the null-distribution made by the permutation function will be distributed around 0.
 This works the same way as the permutations_mean() function
 ```{r fig.width=6, fig.height=4, fig.align='center'}
-if ("ggplot2" %in% (.packages())){
-p <- permutation_median(test,"names","value","Group1","Group2", no_perm=10000, nice_plot=TRUE, progress=FALSE)
+p <- permutation_median(test,"names","value","Group1","Group2", no_perm=10000, nice_plot=ggplot_status, progress=FALSE)
 p
-}else{
-p <- permutation_median(test,"names","value","Group1","Group2", no_perm=10000, nice_plot=FALSE, progress=FALSE)
-p 
-}
 ```
 
 The median is also significantly different in the two groups with a significance level of 0.05.
@@ -82,9 +81,13 @@ data <- data.frame(x,y)
 
 We know that a qudratic model, $x^2$, should fit the data the best, but it is allways a good ide to look at the data making a simple plot, since it is nice to see the dependence between the variables:
 ```{r echo=FALSE}
+if (ggplot_status){
 data %>% ggplot(aes(x,y))+
   geom_point()+
   theme_minimal()
+}else{
+  plot(x,y, col="blue")
+}
 ```
 
 Here we can actually see, that there probably is a quadratic depencence between x and y. 
@@ -93,13 +96,8 @@ Here we can actually see, that there probably is a quadratic depencence between 
 for testing if the quadratic model fits the data significantly better than the linear model
 Here the null-distribution will mimic an F-distribution
 ```{r fig.width=6, fig.height=4, fig.align='center'}
-if ("ggplot2" %in% (.packages())){
-p <- permutation_lm(data, "x","y","quadratic", "linear", nice_plot=TRUE, progress=FALSE)
+p <- permutation_lm(data, "x","y","quadratic", "linear", nice_plot=ggplot_status, progress=FALSE)
 p
-}else{
-p <- permutation_lm(data, "x","y","quadratic", "linear", nice_plot=FALSE, progress=FALSE)
-p  
-}
 ```
 
 We also get an extremely low p-value, that tells us, that we reject the linear model being as good as the quadratic, and we would therefore expect the quadratic model to fit our data better than the linear model.
@@ -111,13 +109,8 @@ Since it is an F-distributed null-model, all values will be above 0, and we do n
 
 We could also check if the cubic model works better than the quadratic model then:
 ```{r fig.width=6, fig.height=4, fig.align='center'}
-if ("ggplot2" %in% (.packages())){
-p <- permutation_lm(data, "x","y","cubic","quadratic", nice_plot=TRUE, progress=FALSE)
+p <- permutation_lm(data, "x","y","cubic","quadratic", nice_plot=ggplot_status, progress=FALSE)
 p
-}else{
-p <- permutation_lm(data, "x","y","cubic","quadratic", nice_plot=FALSE, progress=FALSE)
-p  
-}
 ```
 
 Here we can see, that the p-value is high, and we would therefore not expect the cubic model to be better.
