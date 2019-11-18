@@ -7,7 +7,7 @@ permutation_mean
 Performs a permutation test on a dataset (dataframe) testing if the mean of two different groups are significantly different (the difference in means are significantly different from 0). It prints a permutation-plot with the permuted null-distribution and the observed value (simple or nice depending on choice), and gives a p-value of the means being the same.
 }
 \usage{
-permutation_mean(dataset, name, count, group1, group2, no_perm, nice_plot)
+permutation_mean(dataset, name, count, group1, group2, no_perm, plot, gg_plot)
 }
 \arguments{
   \item{dataset}{the dataset containing the data you want to test in the form of a data frame – the data needs to contain (at least) a column with the names of the two groups you want to test against each other and a column with the values of the different cases for these groups.}
@@ -16,7 +16,8 @@ permutation_mean(dataset, name, count, group1, group2, no_perm, nice_plot)
   \item{group1}{the name of the other group (string)}
   \item{group2}{the name of the other group (string)}
   \item{no_perm}{the number of permutations to make, default=10000}
-  \item{nice_plot}{a logic value indicating whether a nice plot should be printed (requires ggplot2), default=F (as opposed to a simple plot)}
+  \item{plot}{whether or not you want it to plot the distribution of the permutation at all, default=T}
+  \item{gg_plot}{a logic value indicating whether a nice plot should be printed (requires ggplot2), default=F (as opposed to a simple plot)}
   \item{progress}{a logic value indicating whether a progress bar should be printed, default=T}
 }
 \details{
@@ -48,5 +49,5 @@ set.seed(0)
 names <- c(replicate(50,"Group1"), replicate(50, "Group2"))
 test <- data.frame(c(sample(c(1:100), 50, replace=T), sample(c(30:100), 50, replace=T)), names)
 names(test) <- c("value","names")
-permutation_mean(test,"names","value","Group1","Group2", no_perm=10000, nice_plot=TRUE, progress=TRUE)
+permutation_mean(test,"names","value","Group1","Group2", no_perm=10000, plot=TRUE, gg_plot=TRUE, progress=TRUE)
 }

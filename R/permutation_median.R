@@ -1,6 +1,6 @@
 # Permutation median function
 
-permutation_median <- function(dataset, name, count, group1, group2, no_perm=10000, nice_plot=FALSE, progress=TRUE) {
+permutation_median <- function(dataset, name, count, group1, group2, no_perm=10000, plot=T, gg_plot=FALSE, progress=TRUE) {
   # Verify if the columns exists and if the groups exists
   if (any(names(dataset) == name) == FALSE | any(names(dataset) == count) == FALSE){
     stop("One of the columns does not exists. Please, check the spelling or the dataset you are giving") 
@@ -70,16 +70,20 @@ permutation_median <- function(dataset, name, count, group1, group2, no_perm=100
   class(result) <- "htest"
   
   # If statement to plot or not
-  if (nice_plot == TRUE) {
+  if (plot==T){
+  if (gg_plot == TRUE) {
     # Plot + result
     
     plot <- plot_permutation(r, observed, "Permutation test (Median)")
     
     print(plot)
     return(result)
-  } else if (nice_plot == FALSE) {
+  } else if (gg_plot == FALSE) {
     # Result
     hist(r, col="darkblue", breaks = 50, main = "Median permuted distribution", ylab = "Count"); abline(v = observed, col = "darkorange")
+    return(result)
+  }
+  } else{
     return(result)
   }
 }

@@ -1,6 +1,6 @@
 # Permutation lm function
 
-permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm=10000, nice_plot=F, progress=TRUE){
+permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm=10000, plot=T, gg_plot=F, progress=TRUE){
   # Verify if the columns exists and if the groups exists
   accepted_models <- c("linear","quadratic","cubic")
   
@@ -178,16 +178,20 @@ permutation_lm <- function(dataset, predictor, response, model1, model2, no_perm
   class(result) <- "htest"
   
   # If statement to plot or not
-  if (nice_plot == TRUE) {
+  if (plot==T){
+  if (gg_plot == TRUE) {
     # Plot + result
     
     plot <- plot_permutation(r,observed, "Permutation test (Model comparison, F-test)")
     
     print(plot)
     return(result)
-  } else if (nice_plot == FALSE) {
+  } else if (gg_plot == FALSE) {
     # Result
     hist(r, col="darkblue", breaks = 50, main = "F permuted distribution", ylab = "Count"); abline(v = observed, col = "darkorange")
+    return(result)
+  }
+  } else {
     return(result)
   }
 }

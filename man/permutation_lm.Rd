@@ -7,7 +7,7 @@ permutation_lm
 Performs a permutation test on a dataset (dataframe) testing if the more complicated of two linear models (linear, quadratic or cubic) fits the data significantly better than the less complicated model. It prints a permutation-plot with the permuted null-distribution and the observed value (simple or nice depending on choice) and gives a p-value.
 }
 \usage{
-permutation_lm(dataset, predictor, response, model1, model2, no_perm, nice_plot)
+permutation_lm(dataset, predictor, response, model1, model2, no_perm, plot, gg_plot)
 }
 \arguments{
   \item{dataset}{the dataset containing the data you want to test in the form of a data frame – the data needs to contain (at least) a column with the names of the two groups you want to test against each other and a column with the values of the different cases for these groups.}
@@ -16,7 +16,8 @@ permutation_lm(dataset, predictor, response, model1, model2, no_perm, nice_plot)
   \item{model1}{the name of one of the models you want to test (string), possible values: “linear”, “quadratic” or “cubic”}
   \item{model2}{the name of the other model you want to test (string), possible values: “linear”, “quadratic” or “cubic”}
   \item{no_perm}{the number of permutations to make, default=10000}
-  \item{nice_plot}{a logic value indicating whether a nice plot should be printed (requires ggplot2), default=F (as opposed to a simple plot)}
+  \item{plot}{whether or not you want it to plot the distribution of the permutation at all, default=T}
+  \item{gg_plot}{a logic value indicating whether a nice ggplot plot should be printed (requires ggplot2), default=F (as opposed to a simple plot)}
   \item{progress}{a logic value indicating whether a progress bar should be printed, default=T}
 }
 \details{
@@ -47,6 +48,6 @@ set.seed(0)
 x <- sample(c(-10:10), 100, replace=T)
 y <- 4*x^2+3+50*sample(c(-10:10), 100, replace=T)
 data <- data.frame(x,y)
-permutation_lm(data, "x","y","quadratic", "linear", nice_plot = TRUE)
-permutation_lm(data, "x","y","cubic","quadratic", nice_plot=TRUE, progress=FALSE)
+permutation_lm(data, "x","y","quadratic", "linear", plot=TRUE, gg_plot=TRUE, progress=TRUE)
+permutation_lm(data, "x","y","cubic","quadratic", plot=TRUE, gg_plot=TRUE, progress=TRUE)
 }
