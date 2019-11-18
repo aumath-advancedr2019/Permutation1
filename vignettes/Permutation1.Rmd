@@ -45,7 +45,7 @@ p <- permutation_mean(test,"names","value","Group1","Group2", no_perm=10000, nic
 p
 ```
 
-Here we get a p-value of $3*10^{-4}$, and with a 5% significance level we can reject that the mean of the two groups are the same.
+Here we get a p-value of $`r p["p.value"]`$, and with a 5% significance level we can reject that the mean of the two groups are the same.
 
 The p-value is calculated as:
 
@@ -68,7 +68,7 @@ p <- permutation_median(test,"names","value","Group1","Group2", no_perm=10000, n
 p
 ```
 
-The median is also significantly different in the two groups with a significance level of 0.05.
+The median is also significantly different in the two groups with a significance level of 5%.
 
 ##### Making small dataset for demonstrating the permutation two different linear models:
 
