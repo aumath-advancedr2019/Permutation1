@@ -49,5 +49,5 @@ set.seed(0)
 names <- c(replicate(50,"Group1"), replicate(50, "Group2"))
 test <- data.frame(c(sample(c(1:100), 50, replace=T), sample(c(30:100), 50, replace=T)), names)
 names(test) <- c("value","names")
-permutation_mean(test,"names","value","Group1","Group2", no_perm=10000, plot=TRUE, gg_plot=TRUE, progress=TRUE)
+permutation_mean(test,"names","value","Group1","Group2", no_perm=10000, plot=TRUE, gg_plot=TRUE, progress=FALSE)
 }

@@ -48,6 +48,6 @@ set.seed(0)
 x <- sample(c(-10:10), 100, replace=T)
 y <- 4*x^2+3+50*sample(c(-10:10), 100, replace=T)
 data <- data.frame(x,y)
-permutation_lm(data, "x","y","quadratic", "linear", plot=TRUE, gg_plot=TRUE, progress=TRUE)
-permutation_lm(data, "x","y","cubic","quadratic", plot=TRUE, gg_plot=TRUE, progress=TRUE)
+permutation_lm(data, "x","y","quadratic", "linear", plot=TRUE, gg_plot=TRUE, progress=FALSE)
+permutation_lm(data, "x","y","cubic","quadratic", plot=TRUE, gg_plot=TRUE, progress=FALSE)
 }
