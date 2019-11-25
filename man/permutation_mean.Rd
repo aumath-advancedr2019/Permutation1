@@ -23,7 +23,7 @@ permutation_mean(dataset, name, count, group1, group2, no_perm, plot, gg_plot)
 \details{
 The calculations that are done in this function are the difference in means (mean(group1)-mean(group2)). This will be the observed value. The dataset values are then randomly shuffled and the difference in mean are calculated again and saved. This is done as many times as the no_perm is defined as, and thereby a null-distribution is made. A p-value is then calculated as the amount of times the absolute value of the permuted values are bigger or equal to the absolute value of the observed + 1 divided by the total amount of permutations + 1:
 
-\deqn{p_val = (\sum(|perm_val| \ge |observed|)+1) / (#permutation+1)}
+$$p-val = \frac{\sum (|PermutedValue|\ge |ObservedValue|)+1}{\#Permutations+1}$$
 
 We add one as a precaution, since we do not know the value of the next permutation and thereby always should expect the “next” value to be at least as extreme as the observed.
 This test is two-sided.
