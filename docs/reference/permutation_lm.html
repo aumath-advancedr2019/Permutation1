@@ -163,7 +163,7 @@
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The calculations that are done in this function are an anova of the chosen two models of the dataset, giving a value from the F-distribution. The two models are made, depending on which models are chosen, using the build-in lm() function. The F-value calculated will be the observed value. The dataset values are then randomly shuffled, the two models are made again, and the F-value is calculated and saved – this is done as many times as the no_perm is defined as. This will give a “new F-distribution”, that will be our null-distribution, where a p-value then can be calculated as the amount of times the value of the permuted values are bigger or equal to the value of the observed + 1, divided by the total amount of permutations + 1:</p>
-<p>$$p_val = (\sum(perm_val \ge observed)+1) / (#permutation+1)$$</p>
+<p>$$p_{val} = (\sum(perm_{val} \ge observed)+1) / (\#permutation+1)$$</p>
 <p>We add one as a precaution, since we do not know the value of the next permutation and thereby always should expect the “next” value to be at least as extreme as the observed. If this value is below the chosen significance value, the more complicated of the two models chosen will be significantly better than the less complicated of the two models.</p>
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
