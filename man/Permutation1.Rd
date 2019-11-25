@@ -8,10 +8,10 @@ We have different functions depending on what statistical value you want to test
 }
 \usage{
 Functions in this package (see more about the specific functions in the documentation about them):
-  permutation_mean()
-  permutation_median()
-  permutation_lm()
-  plot_permutation()
+permutation_mean()
+permutation_median()
+permutation_lm()
+plot_permutation()
 }
 \author{
 Adrián Gómez & Solveig Østergaard
