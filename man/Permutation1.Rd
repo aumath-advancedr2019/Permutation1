@@ -11,6 +11,8 @@ permutation_median()
 permutation_lm()
 plot_permutation()
 }
+\usage{
+}
 \author{
 Adrián Gómez & Solveig Østergaard
 }
