@@ -14,19 +14,11 @@ plot_permutation(data, observed, title)
   \item{observed}{observed value}
   \item{title}{title of the plot (string)}
 }
-\details{
-}
+
 \value{
 plot_permutaion returns a ggplot.
 }
-\references{
-}
+
 \author{  
 Adrián Gómez & Solveig Østergaard
-}
-\note{
-}
-\seealso{
-}
-\examples{
 }
