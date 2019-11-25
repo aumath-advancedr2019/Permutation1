@@ -34,15 +34,11 @@ permutation_lm returns a list with the class “htest” containing the followin
   \item{estimate}{the value of the observed F-value for the models}
   \item{data.name}{the names of the predictor and response tested}
 }
-\references{
-}
+
 \author{
 Adrián Gómez & Solveig Østergaard
 }
-\note{
-}
-\seealso{
-}
+
 \examples{
 set.seed(0)
 x <- sample(c(-10:10), 100, replace=T)

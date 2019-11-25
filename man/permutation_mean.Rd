@@ -35,15 +35,11 @@ permutation_mean returns a list with the class “htest” containing the follow
   \item{estimate}{the values the observed means for the different groups and the difference}
   \item{data.name}{the names of the two groups tested}
 }
-\references{
-}
+
 \author{
 Adrián Gómez & Solveig Østergaard
 }
-\note{
-}
-\seealso{
-}
+
 \examples{
 set.seed(0)
 names <- c(replicate(50,"Group1"), replicate(50, "Group2"))
